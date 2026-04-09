@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HBO Max Ultra</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif;}
+body{background:#0b0b0b;color:white;}
+
+/* NAVBAR */
+.navbar{
+position:fixed;
+width:100%;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 50px;
+background:linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+z-index:100;
+}
+
+.search{
+padding:8px 15px;
+border-radius:20px;
+border:none;
+outline:none;
+}
+
+/* HERO */
+.hero{
+height:95vh;
+background-size:cover;
+background-position:center;
+display:flex;
+align-items:flex-end;
+padding:60px;
+position:relative;
+}
+
+.hero::after{
+content:"";
+position:absolute;
+inset:0;
+background:linear-gradient(to top, black 10%, transparent 60%);
+}
+
+.hero-content{
+position:relative;
+max-width:600px;
+}
+
+.hero h1{font-size:60px;}
+.hero p{opacity:0.8;margin:15px 0;}
+
+button{
+padding:10px 20px;
+margin-right:10px;
+border:none;
+cursor:pointer;
+}
+.watch{background:red;color:white;}
+.info{background:white;color:black;}
+
+/* ROW */
+.row{padding:20px 50px;}
+
+.movies{
+display:flex;
+overflow-x:auto;
+gap:15px;
+}
+
+/* POSTER FIX */
+.movie{
+flex:0 0 auto;
+width:200px;
+aspect-ratio:2/3;
+cursor:pointer;
+}
+
+.movie img{
+width:100%;
+height:100%;
+object-fit:cover;
+border-radius:10px;
+transition:0.3s;
+}
+
+.movie:hover img{
+transform:scale(1.08);
+}
+
+/* PLAYER */
+.player{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.95);
+display:none;
+justify-content:center;
+align-items:center;
+}
+
+.player iframe{
+width:80%;
+height:70%;
+border-radius:10px;
+}
+
+.close{
+position:absolute;
+top:20px;
+right:40px;
+font-size:30px;
+cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+<h2>HBO MAX</h2>
+<input 
+class="search" 
+type="text" 
+placeholder="Search movie..." 
+oninput="searchMovie(this.value)"
+>
+</div>
+
+<!-- HERO -->
+<div class="hero" id="hero">
+<div class="hero-content">
+<h1 id="title"></h1>
+<p id="desc"></p>
+<button class="watch" onclick="playTrailer()">▶ Watch Trailer</button>
+</div>
+</div>
+
+<!-- MOVIES -->
+<div class="row">
+<h2>Trending Now</h2>
+<div class="movies" id="movies"></div>
+</div>
+
+<!-- PLAYER -->
+<div class="player" id="player">
+<span class="close" onclick="closePlayer()">✖</span>
+<iframe id="ytPlayer" frameborder="0" allowfullscreen></iframe>
+</div>
+
+<script>
+
+/* DATA FILM */
+const movies = [
+{
+title:"Godzilla vs Kong",
+desc:"Epic battle between two legends.",
+poster:"https://image.tmdb.org/t/p/w500/inJjDhCjfhh3RtrJWBmmDqeuSYC.jpg",
+backdrop:"https://image.tmdb.org/t/p/original/9yBVqNruk6Ykrwc32qrK2TIE5xw.jpg",
+trailer:"https://www.youtube.com/embed/odM92ap8_c0"
+},
+{
+title:"Avengers: Infinity War",
+desc:"The Avengers face Thanos.",
+poster:"https://image.tmdb.org/t/p/w500/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg",
+backdrop:"https://image.tmdb.org/t/p/original/bOGkgRGdhrBYJSLpXaxhXVstddV.jpg",
+trailer:"https://www.youtube.com/embed/6ZfuNTqbHE8"
+},
+{
+title:"Thor: Ragnarok",
+desc:"Thor must escape and save Asgard.",
+poster:"https://image.tmdb.org/t/p/w500/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg",
+backdrop:"https://image.tmdb.org/t/p/original/kaIfm5ryEOwYg8mLbq8HkPuM1Fo.jpg",
+trailer:"https://www.youtube.com/embed/ue80QwXMRHg"
+}
+];
+
+const container = document.getElementById("movies");
+const hero = document.getElementById("hero");
+
+let current = movies[0];
+
+/* HERO */
+function setHero(m){
+document.getElementById("title").innerText = m.title;
+document.getElementById("desc").innerText = m.desc;
+hero.style.backgroundImage = `url(${m.backdrop})`;
+current = m;
+}
+
+setHero(current);
+
+/* RENDER */
+function render(list){
+container.innerHTML="";
+list.forEach(m=>{
+const div=document.createElement("div");
+div.className="movie";
+
+div.innerHTML=`<img src="${m.poster}">`;
+
+div.onclick=()=>setHero(m);
+
+container.appendChild(div);
+});
+}
+
+render(movies);
+
+/* SEARCH */
+function searchMovie(query){
+const filtered = movies.filter(m =>
+m.title.toLowerCase().includes(query.toLowerCase())
+);
+render(filtered);
+}
+
+/* PLAYER */
+function playTrailer(){
+const player=document.getElementById("player");
+const iframe=document.getElementById("ytPlayer");
+
+player.style.display="flex";
+iframe.src=current.trailer + "?autoplay=1";
+}
+
+function closePlayer(){
+const player=document.getElementById("player");
+const iframe=document.getElementById("ytPlayer");
+
+player.style.display="none";
+iframe.src="";
+}
+
+</script>
+
+</body>
+</html>
